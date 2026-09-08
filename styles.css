@@ -244,8 +244,11 @@
   .next-event{
     background:var(--accent-dark);color:var(--paper);
     padding:18px 22px;display:flex;align-items:center;gap:18px;
-    flex-wrap:wrap;margin-bottom:24px;
+    flex-wrap:wrap;margin-bottom:12px;
   }
+  .next-event:last-of-type{margin-bottom:24px;}
+  #today-event{background:var(--accent);}
+  #today-event .next-event-label{color:var(--paper);border-right-color:rgba(250,247,240,0.5);}
   .next-event-label{
     font-family:Arial,sans-serif;font-size:11px;text-transform:uppercase;
     letter-spacing:2px;color:var(--gold);font-weight:bold;

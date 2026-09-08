@@ -70,26 +70,42 @@ const SCHOOL_EVENTS = [
     return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   }
 
+  function formatLabel(dateKey) {
+    const [y, m, d] = dateKey.split("-").map(Number);
+    const eventDate = new Date(y, m - 1, d);
+    return eventDate.toLocaleDateString("es-ES", { day: "numeric", month: "long" });
+  }
+
   function renderNextEvent(today) {
     const todayKey = toDateKey(today);
+
+    const todayEvents = SCHOOL_EVENTS.filter(e => e.date === todayKey);
     const upcoming = SCHOOL_EVENTS
-      .filter(e => e.date >= todayKey)
+      .filter(e => e.date > todayKey)
       .sort((a, b) => a.date.localeCompare(b.date))[0];
 
-    const dateEl = document.getElementById("next-event-date");
-    const nameEl = document.getElementById("next-event-name");
-    if (!dateEl || !nameEl) return;
+    const todayBox = document.getElementById("today-event");
+    const todayDateEl = document.getElementById("today-event-date");
+    const todayNameEl = document.getElementById("today-event-name");
+    const nextDateEl = document.getElementById("next-event-date");
+    const nextNameEl = document.getElementById("next-event-name");
+    if (!nextDateEl || !nextNameEl) return;
+
+    if (todayEvents.length > 0 && todayBox && todayDateEl && todayNameEl) {
+      todayBox.hidden = false;
+      todayDateEl.textContent = `Hoy, ${formatLabel(todayKey)}`;
+      todayNameEl.textContent = todayEvents.map(e => e.title).join(" · ");
+    } else if (todayBox) {
+      todayBox.hidden = true;
+    }
 
     if (!upcoming) {
-      dateEl.textContent = "";
-      nameEl.textContent = "No hay más eventos programados en el calendario.";
+      nextDateEl.textContent = "";
+      nextNameEl.textContent = "No hay más eventos programados en el calendario.";
       return;
     }
-    const [y, m, d] = upcoming.date.split("-").map(Number);
-    const eventDate = new Date(y, m - 1, d);
-    const label = eventDate.toLocaleDateString("es-ES", { day: "numeric", month: "long" });
-    dateEl.textContent = eventDate.toDateString() === today.toDateString() ? `Hoy, ${label}` : label;
-    nameEl.textContent = upcoming.title;
+    nextDateEl.textContent = formatLabel(upcoming.date);
+    nextNameEl.textContent = upcoming.title;
   }
 
   function renderMonthCalendar(today) {
