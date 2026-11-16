@@ -174,7 +174,8 @@
     font-family:Arial,sans-serif;font-size:13px;
   }
   .staffbox h4{margin:0 0 10px;font-family:'Playfair Display',Georgia,serif;font-size:18px;color:var(--gold);}
-  .staffbox .row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #333;}
+  .staffbox .row{display:flex;justify-content:space-between;gap:12px;padding:4px 0;border-bottom:1px solid #333;}
+  .staffbox .row span:last-child{text-align:right;}
   .staffbox .row:last-child{border-bottom:none;}
 
   footer{
