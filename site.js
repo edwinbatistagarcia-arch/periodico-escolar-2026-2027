@@ -78,3 +78,45 @@
     });
   }
 })();
+
+// Portada automática: la noticia más reciente arriba y las dos siguientes debajo.
+// Para publicar una noticia nueva basta con añadir su tarjeta (con data-date="AAAA-MM-DD") en su sección.
+(function () {
+  var portada = document.getElementById("portada");
+  if (!portada) return;
+  var nombres = { noticias: "Noticias", academico: "Académico", deportes: "Deportes", cultura: "Cultura", voz: "Voz Estudiantil" };
+  var meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  var cards = Array.prototype.slice.call(document.querySelectorAll("section:not(#portada) a.card-link[data-date]"));
+  if (!cards.length) return;
+  cards.sort(function (a, b) { return a.dataset.date < b.dataset.date ? 1 : a.dataset.date > b.dataset.date ? -1 : 0; });
+  function info(a) {
+    var p = a.dataset.date.split("-"), sec = a.closest("section");
+    var img = a.querySelector("img"), cat = a.querySelector(".cat");
+    return {
+      href: a.getAttribute("href"), img: img.getAttribute("src"), alt: img.getAttribute("alt"),
+      title: a.querySelector("h3").textContent, text: a.querySelector("p").textContent,
+      cat: cat ? cat.textContent : "", sec: nombres[sec && sec.id] || "Noticias",
+      corta: (+p[2]) + " de " + meses[+p[1] - 1], larga: (+p[2]) + " de " + meses[+p[1] - 1] + " de " + p[0],
+      byline: a.dataset.byline || "Por la Redacción Estudiantil"
+    };
+  }
+  function esc(t) { var d = document.createElement("div"); d.textContent = t; return d.innerHTML.replace(/"/g, "&quot;"); }
+  var h = info(cards[0]);
+  var html =
+    '<a href="' + esc(h.href) + '" class="hero-link"><div class="hero"><div>' +
+    '<span class="kicker">Lo más reciente · ' + esc(h.cat || h.sec) + '</span>' +
+    '<h2>' + esc(h.title) + '</h2>' +
+    '<p class="byline">' + esc(h.byline) + ' · ' + esc(h.larga) + '</p>' +
+    '<p class="dropcap">' + esc(h.text) + '</p></div>' +
+    '<div class="hero-img" style="padding:0;overflow:hidden;"><img src="' + esc(h.img) + '" alt="' + esc(h.alt) +
+    '" style="width:100%;height:100%;object-fit:cover;display:block;"></div></div></a>';
+  var sec = cards.slice(1, 3).map(function (a) {
+    var c = info(a);
+    return '<a href="' + esc(c.href) + '" class="card-link"><article class="card">' +
+      '<img src="' + esc(c.img) + '" alt="' + esc(c.alt) + '" class="card-img">' +
+      '<span class="cat">' + esc(c.sec) + ' · ' + esc(c.corta) + '</span>' +
+      '<h3>' + esc(c.title) + '</h3><p>' + esc(c.text) + '</p></article></a>';
+  }).join("");
+  if (sec) html += '<div class="grid portada-sec">' + sec + '</div>';
+  portada.innerHTML = html;
+})();
